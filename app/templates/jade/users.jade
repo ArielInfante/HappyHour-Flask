@@ -1,0 +1,16 @@
+- extends "base.jade"
+
+- block content
+if user
+    h1= user.username
+    h2= user.name
+    h3= user.email
+    h4= user.avatar
+else
+    a(href="#")
+
+h1= users_profile.username
+h2= users_profile.email
+h3= users_profile.avatar
+
+- endblock

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if user %}
+        <h1>{{ user.username }}</h1>
+        <h2>{{ user.name }}</h2>
+        <h3>{{ user.email }}</h3>
+        <h4>{{ user.avatar }}</h4>
+    {% else %}
+        <a href="/login">login</a>
+    {% endif %}
+
+    <h1>{{ users_profile.username }}</h1>
+    <h2>{{ users_profile.name }}</h2>
+    <h3>{{ users_profile.email }}</h3>
+    <h4>{{ users_profile.avatar }}</h4>
+
+    {% if user.username == users_profile.username %}
+        <h1>This is users own profile</h1>
+    {% endif %}
+{% endblock %}

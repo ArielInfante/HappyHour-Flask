@@ -1,0 +1,18 @@
+- extends "base.jade"
+
+- block content
+
+h1= user.username
+
+form(action="{{ url_for('user.login') }}", class="navbar-form navbar-right", method="POST")
+    = form.csrf_token
+    .form-group
+        = form.username_email.label
+        = form.username_email(class="form-control", placeholder="Username or Email")
+    .form-group
+        = form.password.label
+        = form.password(class="form-control", placeholder="password")
+    .form-group
+        = form.submit(class="btn btn-submit", placeholder="Login")
+
+- endblock

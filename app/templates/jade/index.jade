@@ -1,0 +1,12 @@
+- extends "base.jade"
+
+- block content
+
+if user
+    h2= user.username
+else
+    a(href="/login") Login
+
+h1 Landing Page
+
+- endblock

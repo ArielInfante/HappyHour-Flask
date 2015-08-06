@@ -1,0 +1,36 @@
+- extends "base.jade"
+
+- block content
+
+form(action="{{ url_for('user.signup') }}", class="navbar-form navbar-right", method="POST")
+    = form.csrf_token
+    .form-group
+        = form.username.label
+        = form.username(class="form-control", placeholder="Username")
+        span
+            if form.username.errors
+                for error in form.username.errors
+                    = error
+                endfor
+            endif
+
+    .form-group
+        = form.name.label
+        = form.name(class="form-control", placeholder="Name")
+
+    .form-group
+        = form.email.label
+        = form.email(class="form-control", placeholder="Email")
+
+    .form-group
+        = form.password.label
+        = form.password(class="form-control", placeholder="Password")
+
+    .form-group
+        = form.accept_tos.label
+        = form.accept_tos(class="form-control")
+
+    .form-group
+        = form.submit(class="btn-submit", placeholder="Submit")
+
+- endblock

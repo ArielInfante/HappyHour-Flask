@@ -1,0 +1,35 @@
+# Files & Random Files
+*.py[cod]
+.DS_Store
+.Python
+secret.py
+snippets.py
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+.idea
+database_modeling
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# Installer logs
+pip-log.txt
+
+# Virtual environment
+venv

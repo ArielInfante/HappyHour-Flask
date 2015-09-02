@@ -1,3 +1,5 @@
+from app import app
+
 def trim_all_spaces(theString):
     return theString.replace(' ', '').lower()
 
@@ -15,3 +17,6 @@ def email_is_valid(theEmail):
 
 def name_is_valid(theName):
     return True
+
+def allowed_extensions(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in app.config['ALLOWED_IMG_EXTENSIONS']

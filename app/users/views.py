@@ -1,11 +1,16 @@
 from . import user
-from flask import render_template, redirect, url_for, flash, request, abort
+from flask import render_template, redirect, url_for, flash, request, abort, jsonify, json
 from app import db
-from forms import LoginForm, SignUpForm, EditProfileForm
+from forms import LoginForm, SignUpForm, EditProfileForm, AvatarForm
 from models import User
-from app.functions import username_is_valid, email_is_valid
+from app.functions import username_is_valid, email_is_valid, allowed_extensions
 from flask.ext.login import login_required, login_user, logout_user, current_user
-
+from werkzeug import secure_filename
+from app import csrf
+from app import app
+import os
+from PIL import Image
+from base64 import b64decode, decode
 
 @user.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -104,6 +109,68 @@ def editprofile():
     return render_template('editprofile.html', title="Username", user=current_user, form=form)
 
 
+@user.route('/profile/upload')
+@login_required
+def upload():
+    form = AvatarForm()
+    # if request.method == 'POST':
+    #     form_data = request.values
+    #
+    #     filename = secure_filename(form.photo.data.filename)
+        # form.photo.data.save('uploads/' + current_user.get_id() + '/' + filename)
+        # return render_template('avatar.html', title="Upload Avatar", user=current_user, form=form)
+        # flash("Testing Ajax Calls")
+    return render_template('avatar.html', title="Upload Avatar", user=current_user, form=form)
+
+
+@user.route('/profile/upload/_testajax', methods=['POST'])
+def ajax_test():
+    print request.data
+    dataSuccess = request.data + "YES"
+    print dataSuccess
+    return jsonify(result=dataSuccess)
+
+
+# @csrf.exempt
+@user.route('/profile/upload/_avatar', methods=['POST'])
+def ajax_uploadavatar():
+    print "in upload avatar function"
+    # print os.path
+    # print os.getcwd()
+    # print os.path.join(app.config['UPLOAD_IMG_FOLDER'], "sup")
+    # print os.path.dirname()
+    print "__________"
+
+    # request_form = request.form
+    print "form"
+    print request.form
+
+    print "__________"
+
+    request_file = request.files['croppedImage']
+    print "files"
+    print request.files
+
+    if request.method == 'POST':
+        print "its a post request"
+        if request_file and allowed_extensions(request_file.filename):
+            filename = secure_filename(request_file.filename)
+            users_folder = app.config['UPLOAD_IMG_FOLDER'] + current_user.get_id() + '/'
+            print users_folder
+            try:
+                os.makedirs(users_folder)
+            except OSError:
+                if not os.path.isdir(users_folder):
+                    jsonify(outcome="fail")
+            request_file.save(os.path.join(users_folder, filename))
+            flash("Success!!!!")
+            return jsonify(outcome="success")
+        print "error"
+        return jsonify(outcome="fail")
+    print "error"
+    return jsonify(outcome="fail")
+
+
 @user.route('/user')
 @login_required
 def redirect_user():
@@ -120,7 +187,7 @@ def usersprofile(username):
     #     return redirect(url_for('main.index'))
 
     if User.compare_user_id(current_user, username):
-        redirect(url_for('user.profile'))
+        return redirect(url_for('user.profile'))
 
     users_profile = User.query.filter_by(username_check=username.lower()).first()
     if users_profile is not None:

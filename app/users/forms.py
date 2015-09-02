@@ -1,10 +1,7 @@
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, TextAreaField
-from wtforms.validators import InputRequired, EqualTo, Optional, Length, Email, Regexp
-# from flask.ext.login import current_user
-from wtforms import ValidationError
-from .models import User
-from flask import redirect, url_for
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, TextAreaField, FileField
+from wtforms.validators import InputRequired, Length, Email, Regexp
+from flask_wtf.file import FileRequired, FileAllowed
 
 
 class SignUpForm(Form):
@@ -66,6 +63,12 @@ class EditProfileForm(Form):
     bio = TextAreaField("Bio")
     submit = SubmitField('Save Changes')
 
+class AvatarForm(Form):
+    photo = FileField('Upload Avatar', validators=[
+        FileRequired('A picture is required'),
+        FileAllowed(['jpg', 'png'], "images only")
+    ])
+    submit = SubmitField("Crop & Save")
 
 class ChangePasswordForm(Form):
     submit = SubmitField('Change Password')

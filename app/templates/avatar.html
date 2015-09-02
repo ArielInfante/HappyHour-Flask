@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<!--<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lib/dropzone.css') }}"/>-->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lib/cropper.min.css') }}"/>
+<!--<script type="text/javascript" src="{{ url_for('static', filename='js/lib/dropzone.js') }}"></script>-->
+<script type="text/javascript" src="{{ url_for('static', filename='js/lib/cropper.min.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- <button class="btn btn-md click-ajax">Ajax Test</button>
+<div class="ajax-test"></div> -->
+
+<div id="image-cropper">
+    <div class="cropping-image-container">
+        <div class="cropping-image"></div>
+        <div class="cropping-preview"></div>
+    </div>
+    <form id="avatar-form" class="ai-form" action="{{ url_for('user.upload') }}" method="POST" enctype="multipart/form-data">
+        <!-- <div class="form-block">
+            <input type="range" class="cropit-image-zoom-input" />
+        </div> -->
+        <div class="form-block">
+            {{ form.photo.label }}
+            {{ form.photo(class="ai-input upload-avatar cropit-image-input") }}
+        </div>
+        <div class="form-block">
+            {{ form.submit(class="btn btn-submit btn-crop-save") }}
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+
+{% block ender %}
+
+{% include 'include/crop-avatar-script.html' ignore missing %}
+
+{% endblock %}

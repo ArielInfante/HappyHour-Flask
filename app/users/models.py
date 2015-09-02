@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(70))
     created_on = db.Column(db.DateTime, default=datetime.utcnow())
     privacy = db.Column(db.Boolean, default=True)
-    avatar = db.Column(db.String(120), default="/empty_avatar.jpg")
+    avatar = db.Column(db.String(120), default=None)
     following = db.relationship('Buddies', foreign_keys=[Buddies.following_id],
                                 backref=db.backref('follower', lazy='joined'),
                                 lazy='dynamic',

@@ -2,12 +2,16 @@ from . import main
 from flask import render_template, flash
 from flask.ext.login import logout_user, login_required, current_user
 from app import app
+from .forms import SearchForm
 
 @main.route('/', methods=['GET', 'POST'])
 @main.route('/index', methods=['GET', 'POST'])
 def index():
-    if current_user.username != "Guest":
-        return render_template('index.html', title="Happy Hour", user=current_user)
+    if not current_user.is_anonymous():
+        form = SearchForm()
+
+        return render_template('index.html', title="Happy Hour", user=current_user, form=form)
+
     return render_template('index.html', title="Happy Hour", user=False)
 
 @app.errorhandler(404)

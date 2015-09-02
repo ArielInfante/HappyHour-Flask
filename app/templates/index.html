@@ -3,6 +3,24 @@
 {% block content %}
     {% if user %}
         <h2>{{ user.username }}</h2>
+        <ul class="ai-list">
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/profile/edit">Edit Profile</a></li>
+            <li><a href="/profile/upload">Edit Avatar</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+
+
+
+
+        <br/><hr/><br/>
+        <div class="form-group">
+            {{ form.search.label }}
+            {{ form.search(class="form-control", placeholder="Search") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-submit") }}
+        </div>
     {% else %}
         <a href="/login">Login</a>
     {% endif %}

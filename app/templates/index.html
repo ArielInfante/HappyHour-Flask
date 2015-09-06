@@ -4,9 +4,9 @@
     {% if user %}
         <h2>{{ user.username }}</h2>
         <ul class="ai-list">
-            <li><a href="/profile">Profile</a></li>
-            <li><a href="/profile/edit">Edit Profile</a></li>
-            <li><a href="/profile/upload">Edit Avatar</a></li>
+            <li><a href="{{ url_for('user.profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('user.editprofile') }}">Edit Profile</a></li>
+            <li><a href="{{ url_for('user.upload') }}">Edit Avatar</a></li>
             <li><a href="/logout">Logout</a></li>
         </ul>
 

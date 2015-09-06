@@ -109,10 +109,13 @@ def editprofile():
     return render_template('editprofile.html', title="Username", user=current_user, form=form)
 
 
-@user.route('/profile/upload')
+@user.route('/profile/avatar')
 @login_required
 def upload():
     form = AvatarForm()
+
+    if current_user.avatar is not None:
+        return render_template('avatar.html', title="Upload Avatar", user=current_user, form=form, has_avatar=True)
     # if request.method == 'POST':
     #     form_data = request.values
     #
@@ -120,54 +123,40 @@ def upload():
         # form.photo.data.save('uploads/' + current_user.get_id() + '/' + filename)
         # return render_template('avatar.html', title="Upload Avatar", user=current_user, form=form)
         # flash("Testing Ajax Calls")
-    return render_template('avatar.html', title="Upload Avatar", user=current_user, form=form)
+    return render_template('avatar.html', title="Upload Avatar", user=current_user, form=form, has_avatar=False)
 
 
-@user.route('/profile/upload/_testajax', methods=['POST'])
-def ajax_test():
-    print request.data
-    dataSuccess = request.data + "YES"
-    print dataSuccess
-    return jsonify(result=dataSuccess)
-
-
-# @csrf.exempt
-@user.route('/profile/upload/_avatar', methods=['POST'])
+@user.route('/profile/avatar/_avatar', methods=['POST'])
 def ajax_uploadavatar():
-    print "in upload avatar function"
-    # print os.path
-    # print os.getcwd()
-    # print os.path.join(app.config['UPLOAD_IMG_FOLDER'], "sup")
-    # print os.path.dirname()
-    print "__________"
-
-    # request_form = request.form
-    print "form"
-    print request.form
-
-    print "__________"
-
-    request_file = request.files['croppedImage']
-    print "files"
-    print request.files
-
     if request.method == 'POST':
-        print "its a post request"
+        request_file = request.files['original']
         if request_file and allowed_extensions(request_file.filename):
-            filename = secure_filename(request_file.filename)
-            users_folder = app.config['UPLOAD_IMG_FOLDER'] + current_user.get_id() + '/'
-            print users_folder
+            users_folder = os.path.join(app.config['UPLOAD_IMG_FOLDER'], current_user.get_id())
+
+            image_name = secure_filename(request_file.filename)
+            image_type = request_file.content_type.split('/')[1]
+
+            thumbnail_size = 128, 128
+            thumbnail_name = 'thumbnail.' + image_type
+
             try:
                 os.makedirs(users_folder)
             except OSError:
                 if not os.path.isdir(users_folder):
-                    jsonify(outcome="fail")
-            request_file.save(os.path.join(users_folder, filename))
-            flash("Success!!!!")
+                    return jsonify(outcome="fail")
+
+            request_file.save(os.path.join(users_folder, image_name))
+
+            thumbnail_image = Image.open(os.path.join(users_folder, image_name))
+            thumbnail_image.thumbnail(thumbnail_size)
+            thumbnail_image.save('%s/%s' % (users_folder, thumbnail_name))
+
+            current_user.avatar = image_name
+            current_user.thumbnail = thumbnail_name
+
+            User.update()
             return jsonify(outcome="success")
-        print "error"
         return jsonify(outcome="fail")
-    print "error"
     return jsonify(outcome="fail")
 
 

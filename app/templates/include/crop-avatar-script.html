@@ -1,17 +1,7 @@
 <script type="text/javascript">
     $(function() {
         ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png'];
-        originalImage = '';
         typeImage = '';
-        croppedImage = '';
-        naturalWidthImage = 0;
-        naturalHeightImage = 0;
-        cropWidthImage = 0;
-        cropHeightImage = 0;
-        positionLeftImage = 0;
-        positionTopImage= 0;
-        aspectRatioImage = 0;
-        naturalAspectRatioImage = 0;
 
         function dataURItoBlob(dataURI) {
             // convert base64/URLEncoded data component to raw binary data held in a string
@@ -35,28 +25,22 @@
 
 
         $('.upload-avatar').on('change', function () {
-
-            // console.log(this.files);
-            // console.log(this.files[0]);
-            // console.log(this.files[0]['type']);
-            // console.log(this.files[0].name);
-            // console.log(this.files[0]['size']);
             fileZero = this.files;
             fileOne = this.files[0];
             if (this.files && this.files[0]) {
                 var fileIsImage = false;
+
                 // Gets the type of image either png or jpg exclude gif
                 fileType = this.files[0]['type'];
 
-                console.log(fileType);
+                // Strips to get the type of extensions
                 typeImage = fileType.substr(fileType.indexOf("/") + 1);
-                console.log(typeImage)
 
+                // Loop through the ALLOWED_EXTENSIONS of the image
                 for (var i = ALLOWED_EXTENSIONS.length - 1; i >= 0; i--) {
                     if (!fileIsImage) {
                         if (typeImage == ALLOWED_EXTENSIONS[i]) {
                             fileIsImage = true;
-                            console.log("match");
                             break;
                         };
                     };
@@ -72,7 +56,6 @@
                     };
                     reader.onprogress = function progressCrop(e) {};
                     reader.onload = function loadCrop(e) {
-                        // console.log(e.target.result);
                         $('.cropping-image').append('<img class="image-to-crop" src="' + e.target.result + '" alt="Crop Avatar" style="width:400px">');
                     };
                     reader.onloadend = function endCrop(e) {
@@ -116,7 +99,7 @@
             };
         });
 
-
+        // Passes the csrf token for security
         var csrftoken = $('meta[name=csrf-token]').attr('content')
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
@@ -131,78 +114,20 @@
             e.preventDefault();
             var form_data = new FormData();
 
-            // originalImage = new Blob([$('.image-to-crop').attr('src')], {type: fileType, name: 'originalImage'});
-            // form_data.append('originalImage', originalImage);
-            // console.log(form_data.get('originalImage'));
-
-            originalImage = dataURItoBlob($('.image-to-crop').attr('src'));
-            form_data.append('originalImage', originalImage, 'original_avatar.' + typeImage);
-            console.log(form_data.get('originalImage'));
-
-
-            form_data.append('typeImage', typeImage);
-            console.log(form_data.get('typeImage'));
-
-            // croppedImage = [$image.cropper('getCroppedCanvas').toDataURL(typeImage)]; // <- insert the image type the user originally input.
-            // croppedImage = new Blob([$image.cropper('getCroppedCanvas').toDataURL(typeImage)], {type: fileType, name: 'croppedImage'});
-            // form_data.append('croppedImage', croppedImage, 'cropped_avatar.' + typeImage);
+            // Makes the canvas to a blob
             croppedImage = dataURItoBlob($image.cropper('getCroppedCanvas').toDataURL(fileType, 1.0));
-            form_data.append('croppedImage', croppedImage, 'cropped_avatar.' + typeImage);
-            console.log(form_data.get('croppedImage'));
-
-            var imageInfo = $image.cropper('getImageData');
-            console.log(imageInfo);
-
-            naturalWidthImage = imageInfo.naturalWidth;
-            form_data.append('naturalWidthImage', naturalWidthImage);
-            console.log(form_data.get('naturalWidthImage'));
-
-            naturalHeightImage = imageInfo.naturalHeight;
-            form_data.append('naturalHeightImage', naturalHeightImage);
-            console.log(form_data.get('naturalHeightImage'));
-
-            naturalAspectRatioImage = imageInfo.aspectRatio;
-            form_data.append('naturalAspectRatioImage', naturalAspectRatioImage);
-            console.log(form_data.get('naturalAspectRatioImage'));
-
-
-            var cropInfo = $image.cropper('getCropBoxData');
-            console.log(cropInfo);
-
-            aspectRatioImage = 1;
-            form_data.append('aspectRatioImage', aspectRatioImage);
-            console.log(form_data.get('aspectRatioImage'));
-
-            cropWidthImage = cropInfo.width;
-            form_data.append('cropWidthImage', cropWidthImage);
-            console.log(form_data.get('cropWidthImage'));
-
-            cropHeightImage = cropInfo.height;
-            form_data.append('cropHeightImage', cropHeightImage);
-            console.log(form_data.get('cropHeightImage'));
-
-            positionLeftImage = cropInfo.left;
-            form_data.append('positionLeftImage', positionLeftImage);
-            console.log(form_data.get('positionLeftImage'));
-
-            positionTopImage = cropInfo.top;
-            form_data.append('positionTopImage', positionTopImage);
-            console.log(form_data.get('positionTopImage'));
-
-            // console.log(form_data.get('cropped'));
-            // console.log(form_data);
+            form_data.append('original', croppedImage, 'original'.concat('.', typeImage));
 
             $.ajax({
                 url: "{{ url_for('user.ajax_uploadavatar') }}",
                 type: 'POST',
                 processData: false,
-                contentType: false, // 'multipart/form-data'
+                contentType: false,
                 dataType: 'json',
                 data: form_data
             })
             .done(function(data) {
                 console.log(data.outcome);
-                // $('.ajax-test').text(data);
             })
             .fail(function() {
                 console.log("error");

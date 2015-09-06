@@ -30,6 +30,7 @@ class User(db.Model, UserMixin):
     created_on = db.Column(db.DateTime, default=datetime.utcnow())
     privacy = db.Column(db.Boolean, default=True)
     avatar = db.Column(db.String(120), default=None)
+    thumbnail = db.Column(db.String(120), default=None)
     following = db.relationship('Buddies', foreign_keys=[Buddies.following_id],
                                 backref=db.backref('follower', lazy='joined'),
                                 lazy='dynamic',
@@ -55,6 +56,10 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password_to_verify):
         return bcrypt.check_password_hash(self.password, password_to_verify)
+
+    @staticmethod
+    def update():
+        db.session.commit()
 
     @staticmethod
     def check_username_taken(check_username):

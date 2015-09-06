@@ -9,7 +9,7 @@ class BaseConfig(object):
     TESTING = False
     SECRET_KEY = APP_SECRET_KEY
     ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
-    UPLOAD_IMG_FOLDER = '/Users/bksoulfly/Projects/PostFlaskHour/app/static/uploads/'
+    UPLOAD_IMG_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'app', 'static', 'uploads'))
     ALLOWED_IMG_EXTENSIONS = ['png', 'jpg', 'jpeg']
     '''
     EXTENSIONS = [
